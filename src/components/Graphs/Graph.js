@@ -40,7 +40,7 @@ function Graphs() {
                 });
 
                 const response = await axios.post(
-                    'https://4rcj8ztc-8080.inc1.devtunnels.ms/plotSentiment',
+                    'http://localhost:4000/plotSentiment',
                     JSON.stringify({
                         keywords,
                         date: dateString,

@@ -97,11 +97,11 @@ function NewsSourceInput() {
         const fetchKeyWords = async () => {
             if (selectedNewsSource && publicationTime.length > 0) {
                 const data = {
-                    // "startDate": formatDateForDB(new Date(publicationTime[0])),
-                    // "endDate": formatDateForDB(new Date(publicationTime[1])),
+                    "startDate": formatDateForDB(new Date(publicationTime[0])),
+                    "endDate": formatDateForDB(new Date(publicationTime[1])),
                     // set start date at year 2000 and end date as year 2024 to get all keywords
-                    "startDate": formatDateForDB(new Date(946684800000)),
-                    "endDate": formatDateForDB(new Date(1704067200000)),
+                    // "startDate": formatDateForDB(new Date(946684800000)),
+                    // "endDate": formatDateForDB(new Date(1704067200000)),
                     "source": selectedNewsSource
                 }
 
@@ -287,6 +287,17 @@ function NewsSourceInput() {
                                 onChange={() => handleRadioClick('Dawn')} // Add onChange handler to update the selected value
                             />
                             <label className='h-fit' htmlFor='Dawn'>Dawn</label>
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <input
+                                className='h-5 w-5 hover:cursor-pointer'
+                                type='radio'
+                                id='Geo'
+                                value='Geo'
+                                checked={selectedNewsSource === 'Geo'}
+                                onChange={() => handleRadioClick('Geo')} // Add onChange handler to update the selected value
+                            />
+                            <label className='h-fit' htmlFor='Geo'>Geo</label>
                         </div>
 
                         <div className='flex gap-2 items-center'>
