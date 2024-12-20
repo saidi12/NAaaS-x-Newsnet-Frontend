@@ -225,7 +225,7 @@ function LandingPage() {
     <div className="w-full md:w-auto mt-8 md:mt-0">
         <iframe
             className="w-full h-64 md:w-[500px] md:h-[300px]"
-            src="https://youtube.com/embed/swWqYLvYNzY"
+            src="https://youtu.be/L4sOcMeHqO4"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
