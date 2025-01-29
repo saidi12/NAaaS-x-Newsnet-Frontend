@@ -127,9 +127,12 @@ function NewsSourceInput() {
                     const responseData = await response.json();
 
                     const keywords = extractWords(responseData)
+                    // remove duplicates
+                    const uniqueKeywords = [...new Set(keywords)];
+                    console.log(uniqueKeywords)
 
                     // set in store
-                    dispatch(setKeyWordsOptions(keywords));
+                    dispatch(setKeyWordsOptions(uniqueKeywords));
                 }
                 catch {
 

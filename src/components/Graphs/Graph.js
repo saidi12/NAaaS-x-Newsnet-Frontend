@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Logo from '../../layout/Logo';
 import Sidebar from '../../components/Vertical-nav/vertical-nav';
 import Modal from './Modal';
@@ -7,6 +8,8 @@ import HistogramGraph from './HistogramGraph';
 import PieChart from './PieChart';
 import DashedLineChart from './DashedLineGraph';
 import axios from 'axios';
+import { format } from 'date-fns';
+
 
 const generateUniqueColors = (numColors) => {
     const colors = [];
@@ -26,13 +29,28 @@ function Graphs() {
     const [data, setData] = useState({ labels: [], datasets: [], colors: [], keywords: [] });
     const [barGraphData, setBarGraphData] = useState({ labels: [], datasets: [] });
 
+    const state = useSelector(state => state);
+    const formatDate = (date) => {
+        return date ? format(new Date(date), 'MMM d, yyyy') : '';
+    };
+
+    // converting to Year-Month-Day format
+    const QformatDate = (date) => {
+        return date ? format(new Date(date), 'yyyy-MM-dd') : '';
+    };
+
     useEffect(() => {
         // Fetch and set data for the DashedLineChart
         const fetchData = async () => {
             try {
-                const startDate = '2024-03-01';
-                const endDate = '2024-06-30';
-                const keywords = ['international', 'airports', 'islamabad'];
+                // const startDate = '2024-03-01';
+                // const endDate = '2024-06-30';
+                // const keywords = ['international', 'airports', 'islamabad'];
+                const startDate = QformatDate(formatDate(state.map.publicationTime[0]));
+                const endDate = QformatDate(formatDate(state.map.publicationTime[1]));
+                const keywords = state.map.keyWordsSearch;
+
+                console.log('Fetching data for:', { startDate, endDate, keywords });
 
                 const dateString = JSON.stringify({
                     startDate,
@@ -92,14 +110,15 @@ function Graphs() {
 
     const fetchBarGraphData = async () => {
         try {
+
             // Fetch data for the Bar Chart
             const response = await axios.post(
                 'https://4rcj8ztc-8080.inc1.devtunnels.ms/plotSentiment',
                 JSON.stringify({
                     keywords: data.keywords, // Use existing keywords
                     date: JSON.stringify({
-                        startDate: '2024-03-01',
-                        endDate: '2024-06-30',
+                        startDate: data.startDate,
+                        endDate: data.endDate,
                     }),
                 }),
                 {
