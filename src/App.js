@@ -16,9 +16,9 @@ import Feedback from './pages/Feedback'
 import ContactUs from './pages/ContactUs'
 import UserProfile from './pages/UserProfile';
 import History from './components/History';import HelpAndSupport from './pages/HelpandSupport'
-import KnowledgeGraph from './pages/KnowledgeGraph';
+import Discover from './pages/Discover';
+import Nexus from './pages/Nexus';
 
-import Graph from './components/Graphs/Graph'
 function App() {
   return (
     <div className="App min-h-screen flex flex-col">
@@ -37,10 +37,10 @@ function App() {
             <Route path='/Feedback' element={<Feedback />} />
             <Route path='/ContactUs' element={<ContactUs />} />
             <Route path='/UserProfile' element={<UserProfile />} />
-            <Route path='/Graphs' element={<Graph />}/>
             <Route path='/History' element={<History />}/>
             <Route path='/HelpAndSupport' element={<HelpAndSupport />}/>
-            <Route path='/KnowledgeGraph' element={<KnowledgeGraph />}/>
+            <Route path='/Discover' element={<Discover />}/>
+            <Route path='/Nexus' element={<Nexus />}/>
         </Routes>
         </BrowserRouter>
       </Provider>

@@ -70,8 +70,9 @@ const NavbarLandingPage = ({ isColored }) => {
     document.getElementById('nav-links').scrollBy({ left: 100, behavior: 'smooth' });
   };
 
-  const scrollToMap=()=>{
-    navigate("/map-input")
+  const scrollToMap=(e)=>{
+    e.preventDefault();
+    navigate("/Nexus")
   }
 
   return (

@@ -6,14 +6,9 @@ import KeyWordInput from './KeyWordInput';
 import KeyWordsShow from '../layout/KeyWordsShow';
 import background from '../assets/map-input-bg.png'
 import Sidebar from '../components/Vertical-nav/vertical-nav';
-import Chatbot from './Chatbot';
 import SearchIcon from '../assets/search.png';
 import SearchBlackIcon from '../assets/searchBlack.png';
 import naasLogo from '../assets/NAaas-logo.png'
-import chatbotLogo from '../assets/chatbot-logo.png'
-import chatbotHelp from '../assets/chat-bot.png'
-import chatbotSideBar from './Vertical-nav/icons/chatbot.png'
-import graphImg from './Vertical-nav/icons/link.png'
 import Preloader from './Preloader';
 
 function MapInput() {
@@ -22,10 +17,6 @@ function MapInput() {
         SearchIcon,
         SearchBlackIcon,
         naasLogo,
-        chatbotLogo,
-        chatbotHelp,
-        chatbotSideBar,
-        graphImg
     ];
 
     return (
@@ -40,7 +31,7 @@ function MapInput() {
                 <KeyWordInput />
                 <KeyWordsShow />
             </div>
-            <Chatbot />
+            
             </div>
         </Preloader>
     );

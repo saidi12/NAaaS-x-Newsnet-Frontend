@@ -114,7 +114,7 @@ function KeyWordInput() {
     }));
 
     const handleButtonClick = () => {
-        if (keywords && newsSource && regionSelected && (focusTime || publicationTime)) {
+        if (keywords && newsSource && (focusTime || publicationTime)) {
             navigate('/news-analytics')
         }
         else {

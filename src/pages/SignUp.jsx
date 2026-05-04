@@ -35,25 +35,23 @@ const SignUp = () => {
             return;
         }
         try {
-            const response = await fetch('https://1fea-58-65-135-186.ngrok-free.app/signup', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/signup`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    fisrtname:formData.firstname,
-                    lastname:formData.lastname,
+                    first_name: formData.firstname,
+                    last_name: formData.lastname,
                     email: formData.email,
                     password: formData.password,
-                    occupation:formData.occupation
-
                 })
             });
             if (response.ok) {
-                const data = response;
-                localStorage.setItem('userEmail', formData.email);
-                localStorage.setItem('token', data.token);
-                navigate('/VerifyEmail');
+                const data = await response.json();
+                localStorage.setItem('token', data.access_token);
+                navigate('/map-input');
             } else {
                 const errorData = await response.json();
-                alert(`Sign up failed: ${errorData.error}`);
+                alert(`Sign up failed: ${errorData.detail || errorData.error}`);
             }
         } catch (error) {
             console.error("Error signing up:", error);

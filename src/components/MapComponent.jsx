@@ -18,7 +18,7 @@ const defaultMarker = new L.Icon({
 });
 
 function capitalizeFirstLetterOnly(str) {
-    if (str.length === 0) return '';
+    if (!str || str.length === 0) return '';
     return str.charAt(0).toLowerCase() + str.slice(1).toLowerCase();
 }
 

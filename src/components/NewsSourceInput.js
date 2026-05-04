@@ -33,30 +33,23 @@ function NewsSourceInput() {
                 // reset region selected
                 dispatch(setRegionSelected(null));
 
-                const url = `${process.env.REACT_APP_API_URL}/getData/${encodeURIComponent(JSON.stringify({ source: selectedNewsSource }))}`;
+                const url = `${process.env.REACT_APP_API_URL}/naas/initial-data?source=${selectedNewsSource}`;
                 try {
                     const loadToast = toast.loading("Fetching locations")
-                    const response = await fetch(url);
+                    const response = await fetch(url, {
+                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+                    });
 
-                    if (response.ok &&
-                        (response.headers.get('Content-Type')?.includes('application/json') ||
-                            response.headers.get('Content-Type')?.includes('text/plain'))
-                    ) {
-                        toast.success('Locations fetched successfully', {
-                            id: loadToast,
-                        });
-                    }
-
-                    else {
-                        toast.error('Error fetching locations', {
-                            id: loadToast,
-                        });
+                    if (response.ok) {
+                        toast.success('Locations fetched successfully', { id: loadToast });
+                    } else {
+                        toast.error('Error fetching locations', { id: loadToast });
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
                     const data = await response.json();
 
-                    // set regions 
-                    setRegions(data.locations);
+                    // set regions
+                    setRegions(data.locations || []);
                 } catch (error) {
                     console.error('Error fetching keywords and locations data:', error);
                 }
@@ -97,18 +90,19 @@ function NewsSourceInput() {
         const fetchKeyWords = async () => {
             if (selectedNewsSource && publicationTime.length > 0) {
                 const data = {
-                    "startDate": formatDateForDB(new Date(publicationTime[0])),
-                    "endDate": formatDateForDB(new Date(publicationTime[1])),
-                    // set start date at year 2000 and end date as year 2024 to get all keywords
-                    // "startDate": formatDateForDB(new Date(946684800000)),
-                    // "endDate": formatDateForDB(new Date(1704067200000)),
+                    "start_date": formatDateForDB(new Date(publicationTime[0])),
+                    "end_date": formatDateForDB(new Date(publicationTime[1])),
                     "source": selectedNewsSource
                 }
 
                 try {
                     const load_toast = toast.loading("Fetching keywords")
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/keywords`, {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/naas/keywords`, {
                         method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+                        },
                         body: JSON.stringify(data),
                     })
 
@@ -144,29 +138,14 @@ function NewsSourceInput() {
     }, [publicationTime, selectedNewsSource])
 
     const extractWords = (data) => {
-        // Initialize an empty array to store all words
-        let allWords = [];
-
-        // Iterate over each item in the data
-        data.forEach(item => {
-            // Remove curly braces and split the words by comma
-            const words = item.word.replace(/[{}]/g, '').split(',');
-            // Combine the words into the allWords array
-            allWords = allWords.concat(words);
-        });
-
-        return allWords;
+        return data.keywords || [];
     };
 
     const formatDateForDB = (date) => {
         const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return `${year}-${month}-${day}`;
     };
 
     const handleRadioClick = (value) => {
@@ -174,19 +153,10 @@ function NewsSourceInput() {
     };
 
     const groupRegionsByType = (regions) => {
-        const grouped = regions.reduce((acc, region) => {
-            const { location_type, name } = region;
-            if (!acc[location_type]) {
-                acc[location_type] = [];
-            }
-            acc[location_type].push({ value: name, label: name });
-            return acc;
-        }, {});
-
-        return Object.keys(grouped).map(type => ({
-            label: type, // Group header
-            options: grouped[type]
-        }));
+        return [{
+            label: 'Locations',
+            options: regions.map(r => ({ value: r.name, label: r.name }))
+        }];
     };
 
     const groupedOptions = groupRegionsByType(regions);
@@ -341,7 +311,7 @@ function NewsSourceInput() {
                         </Dropdown>
                     </div>
 
-                    <Tooltip
+                    {/* <Tooltip
                         title={!showRegionsAndKeyWords ? <span className='text-xl'>Please select a source and time</span> : ""}
                         placement='top'
                         disableHoverListener={!!showRegionsAndKeyWords}
@@ -356,7 +326,7 @@ function NewsSourceInput() {
                                 isDisabled={!showRegionsAndKeyWords}
                             />
                         </div>
-                    </Tooltip>
+                    </Tooltip> */}
                 </div>
             </div>
 

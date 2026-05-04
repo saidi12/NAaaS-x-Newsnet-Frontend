@@ -84,8 +84,8 @@ function NewsList() {
                         : new Date(b.publicationTime) - new Date(a.publicationTime);
                 } else if (sortField === 'location') {
                     return sortBy === 'ascending'
-                        ? a.location.localeCompare(b.location)
-                        : b.location.localeCompare(a.location);
+                        ? (a.focusLocation || '').localeCompare(b.focusLocation || '')
+                        : (b.focusLocation || '').localeCompare(a.focusLocation || '');
                 }
                 return 0;
             });
@@ -105,29 +105,25 @@ function NewsList() {
             const fetchNews = async () => {
                 setIsLoading(true);
 
-                const data = {
-                    location: regionSelected,
+                const requestBody = {
+                    start_date: timestampToDate(publicationTime[0]),
+                    end_date: timestampToDate(publicationTime[1]),
                     topics: keywords,
-                    startDate: timestampToDate(publicationTime[0]),
-                    endDate: timestampToDate(publicationTime[1])
+                    location: regionSelected || null,
+                    source: newsSource,
+                    limit: 100,
                 }
 
-                // Convert data object to JSON string and encode it
-                const dataString = encodeURIComponent(JSON.stringify({
-                    topics: data.topics,
-                    startDate: data.startDate,
-                    endDate: data.endDate
-                }));
-
-                // Construct the request URL
-                const requestUrl = `${process.env.REACT_APP_API_URL}/Search${newsSource}/${dataString}`;
-
-                // console.log(requestUrl);
-
                 try {
-                    // fetch news
                     const load_toast = toast.loading("Fetching news");
-                    const response = await fetch(requestUrl);
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/naas/search/articles`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+                        },
+                        body: JSON.stringify(requestBody),
+                    });
 
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -139,8 +135,8 @@ function NewsList() {
                         toast.success('News fetched successfully', {
                             id: load_toast
                         })
-                        setNewsState(responseData);
-                        dispatch(setNewsRedux(responseData));
+                        const formatted = setNewsState(responseData);
+                        dispatch(setNewsRedux(formatted));
                     }
                     else {
                         toast.success('News fetched successfully', {
@@ -170,22 +166,23 @@ function NewsList() {
     }, [keywords])
 
     const setNewsState = (data) => {
-        // set news
         const formattedNews = data.map(item => {
             return {
                 title: item.header,
-                summary: `Sentiment: ${item.sentiment}, Location Type: ${item.locationType}`,
-                focusTime: item.focusTime,
-                publicationTime: item.creationDate,
-                topics: item.topics.replace(/[{}]/g, '').split(',').map(topic => topic.trim()), // Convert topics string to array
-                location: item.focusLocation,
-                isBiased: ((parseFloat(item.hate_speech) + parseFloat(item.political_bias)
-                    + parseFloat(item.racial_bias)) / 3) > 0.65
+                summary: item.sentiment_label
+                    ? `Sentiment: ${item.sentiment_label} (${item.sentiment?.toFixed(2)})`
+                    : '',
+                focusTime: item.published_date,
+                publicationTime: item.published_date,
+                topics: Array.isArray(item.topics) ? item.topics : [],
+                focusLocation: item.focus_location || '',
+                link: item.link || null,
+                isBiased: false,
             };
         });
 
-        // Update the state with the new news object
         setNews(formattedNews);
+        return formattedNews;
     }
 
     const timestampToDate = (timestamp) => {

@@ -3,14 +3,12 @@ import { GoChevronLeft } from "react-icons/go";
 import { RxCounterClockwiseClock } from "react-icons/rx";
 import { NavLink } from 'react-router-dom';
 import { CarbonHome } from "./icons/CarbonHome.tsx";
-import { CilChartLine } from "./icons/CilChartLine.tsx";
 import { FluentPersonSupport16Regular } from "./icons/FluentPersonSupport16Regular.tsx";
 import { IconoirProfileCircle } from "./icons/IconoirProfileCircle.tsx";
 import { LineMdLogOut } from "./icons/LineMdLogOut.tsx";
 import { FluentPersonFeedback20Regular } from "./icons/FluentPersonFeedback20Regular.tsx";
-import ChatbotIcon from "./icons/chatbot.png";
 import link from "./icons/link.png";
-import { LuMapPin } from "react-icons/lu";
+import { LuMapPin, LuLayoutDashboard } from "react-icons/lu";
 
 const Sidebar = ({ children }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,24 +31,19 @@ const Sidebar = ({ children }) => {
             icon: <LuMapPin className="icon-bold  w-7 h-7" />
         },
         {
-            path: "/KnowledgeGraph",
-            name: "Knowledge Graph",
+            path: "/Discover",
+            name: "Discover",
             icon: <img src={link} alt="link" className="icon-bold w-7 h-10" />
         },
         {
-            path: "/Graphs",
-            name: "Analytics",
-            icon: <CilChartLine className="icon-bold  w-7 h-7" />
+            path: "/Nexus",
+            name: "Nexus",
+            icon: <LuLayoutDashboard className="icon-bold w-7 h-7" />
         },
         {
             path: "/History",
             name: "History",
             icon: <RxCounterClockwiseClock className="icon-bold  w-7 h-7" />
-        },
-        {
-            path: "/productList",
-            name: "Chatbot",
-            icon: <img src={ChatbotIcon} alt="Chatbot" className="icon-bold w-7.5 h-10" />
         },
         {
             path: "/HelpAndSupport",

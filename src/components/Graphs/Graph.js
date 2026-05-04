@@ -49,6 +49,8 @@ function Graphs() {
                 const startDate = QformatDate(formatDate(state.map.publicationTime[0]));
                 const endDate = QformatDate(formatDate(state.map.publicationTime[1]));
                 const keywords = state.map.keyWordsSearch;
+                console.log(keywords)
+
 
                 console.log('Fetching data for:', { startDate, endDate, keywords });
 

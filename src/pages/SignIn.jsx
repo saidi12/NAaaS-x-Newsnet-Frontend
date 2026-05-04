@@ -24,33 +24,25 @@ const SignIn = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch("https://1fea-58-65-135-186.ngrok-free.app/login", {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password
                 })
-            })
-             const data = response;
-            console.log(response.status)
-            localStorage.setItem('token', data.token);
-            if(response.status === 200) {
-                navigate('/map-input'); 
-            } 
-            if(response.status === 401) {
-                 
-            } 
-            if(response.status === 200) {
-                navigate('/map-input'); 
-            } 
-        } catch (error) {
-            if (error.response) {
-              
-                alert(`Login failed: ${error.response.data.error}`);
+            });
+            if (response.status === 200) {
+                const data = await response.json();
+                localStorage.setItem('token', data.access_token);
+                navigate('/map-input');
+            } else if (response.status === 401) {
+                alert('Invalid email or password');
             } else {
-              
-                console.error("Error logging in:", error);
+                alert('Login failed. Please try again.');
             }
+        } catch (error) {
+            console.error("Error logging in:", error);
         }
     };
 
