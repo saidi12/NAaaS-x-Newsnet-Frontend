@@ -22,7 +22,7 @@ const VerifyEmail = () => {
     const email = localStorage.getItem('userEmail');
 
     try {
-        const response = await fetch('http://localhost:3002/auth/verify-email', {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/verify-email`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
