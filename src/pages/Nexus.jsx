@@ -296,7 +296,7 @@ const Nexus = () => {
 
     // Timeline / range / result-count controls
     const [timelineMode, setTimelineMode] = useState('publication');
-    const [rangeVal, setRangeVal]         = useState(100); // 0-100 % of date span to show
+    const [rangeVal, setRangeVal]         = useState(0); // 0 = from oldest (show all) … 100 = from newest
     const [topK, setTopK]                 = useState(15);
 
     // Causal chain
@@ -319,14 +319,14 @@ const Nexus = () => {
         if (!dates.length) return { min: null, max: null, from: null, minYear: '—', maxYear: '—', fromYear: '—', field };
         const min = dates[0];
         const max = dates[dates.length - 1];
-        // rangeVal=100 → from=min (show all); rangeVal=0 → from=max (show none)
-        const from = new Date(max.getTime() - (rangeVal / 100) * (max.getTime() - min.getTime()));
+        // rangeVal=0 (thumb left) → from=min (oldest, show all); rangeVal=100 (thumb right) → from=max (newest only)
+        const from = new Date(min.getTime() + (rangeVal / 100) * (max.getTime() - min.getTime()));
         return { min, max, from, minYear: min.getFullYear(), maxYear: max.getFullYear(), fromYear: from.getFullYear(), field };
     }, [searchResults, timelineMode, rangeVal]);
 
     // ── Visible results after date-range filter (client-side, no refetch) ──────
     const visibleResults = useMemo(() => {
-        if (!dateInfo.from || rangeVal === 100) return searchResults;
+        if (!dateInfo.from || rangeVal === 0) return searchResults;
         return searchResults.filter(r => {
             const d = new Date(r[dateInfo.field] || r.date || r.published_date);
             return isNaN(d.getTime()) || d >= dateInfo.from;
@@ -421,7 +421,7 @@ const Nexus = () => {
         setSelectedEntity(null);
         setEntityResult(null);
         setActiveTab('overview');
-        setRangeVal(100); // reset date filter on new search
+        setRangeVal(0); // reset date filter on new search (show full span)
 
         try {
             const res = await fetch(`${process.env.REACT_APP_API_URL}/graphrag/search`, {
@@ -539,13 +539,13 @@ const Nexus = () => {
                             <span className='text-xs text-gray-400 whitespace-nowrap'>Timeline mode:</span>
                             <div className='flex rounded-md border border-gray-200 overflow-hidden text-xs font-medium'>
                                 <button
-                                    onClick={() => { setTimelineMode('publication'); setRangeVal(100); }}
+                                    onClick={() => { setTimelineMode('publication'); setRangeVal(0); }}
                                     className={`px-2.5 py-1 transition-colors ${timelineMode === 'publication' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
                                 >
                                     Publication date
                                 </button>
                                 <button
-                                    onClick={() => { setTimelineMode('focus'); setRangeVal(100); }}
+                                    onClick={() => { setTimelineMode('focus'); setRangeVal(0); }}
                                     className={`px-2.5 py-1 border-l border-gray-200 transition-colors ${timelineMode === 'focus' ? 'bg-gray-900 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
                                 >
                                     Focus time
@@ -562,7 +562,7 @@ const Nexus = () => {
                                 className='flex-1 accent-gray-900 h-1 cursor-pointer'
                             />
                             <span className='text-xs text-gray-500 whitespace-nowrap tabular-nums shrink-0'>
-                                {rangeVal === 100
+                                {rangeVal === 0
                                     ? `${dateInfo.minYear} – ${dateInfo.maxYear}`
                                     : `${dateInfo.fromYear} – ${dateInfo.maxYear}`}
                             </span>
@@ -572,11 +572,11 @@ const Nexus = () => {
                         <div className='flex items-center gap-2 shrink-0'>
                             <span className='text-xs text-gray-400 whitespace-nowrap'>Results:</span>
                             <input
-                                type='range' min={10} max={100} step={5} value={topK}
+                                type='range' min={10} max={500} step={10} value={topK}
                                 onChange={e => setTopK(+e.target.value)}
                                 className='w-24 accent-gray-900 h-1 cursor-pointer'
                             />
-                            <span className='text-xs text-gray-500 tabular-nums w-5'>{topK}</span>
+                            <span className='text-xs text-gray-500 tabular-nums w-8'>{topK}</span>
                             <button
                                 onClick={handleSearch}
                                 disabled={searchLoading}
